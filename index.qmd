@@ -1,0 +1,71 @@
+---
+title: "The Challenges of Resampling for Graphics"
+format:
+  jasa-pdf:
+    keep-tex: true  
+    journal:
+      blinded: false
+  jasa-html: default
+date: last-modified
+author:
+  - name: Di Cook
+    acknowledgements: | 
+      The authors gratefully acknowledge _please remember to list all relevant funding sources in the non-anonymized (unblinded) version_.
+    affiliations:
+      - name: Monash University
+        department: Department of Econometrics and Business Statistics
+  - name: Susan Vanderplas
+    affiliations:
+      - name: University of Nebraska Lincoln
+        department: Statistics Department
+abstract: |
+  The text of your abstract. 200 or fewer words.
+keywords:
+  - 3 to 6 keywords
+  - that do not appear in the title
+bibliography: bibliography.bib  
+---
+
+## Introduction {#sec-intro}
+
+Lay out the situations where resampling/bootstrap are useful 
+
+Primarily, used to get a sense of the behavior/distribution of a statistic
+
+Graphics are statistics, but ultimately, resampling/bootstrap methods are of limited use in graphics because of two primary issues: overplotting, which limits the utility of resampling because of lack of visual novelty, and limited ability to evaluate the test statistics - we can computationally evaluate thousands of samples in fractions of a second, but viewing thousands of plots is much more time consuming.
+
+## Bootstrap and Resampling Approaches
+
+Outline of commonly used bootstrap/resampling approaches and evaluation of graphical challenges
+
+
+
+
+
+## Disclosure statement
+
+The authors have the following conflicts of interest to declare (or replace with a statement that no conflicts of interest exist).
+
+## Data Availability Statement
+
+Deidentified data have been made available at the following URL: XX.
+
+## Supplementary Material {.supplementary}
+
+Title:
+
+:   Brief description. (file type)
+
+
+R-package for  MYNEW routine: 
+
+:   R-package MYNEW containing code to perform the diagnostic methods described in the article. The package also contains all datasets used as examples in the article. (GNU zipped tar file)
+
+HIV data set:
+
+:   Data set used in the illustration of MYNEW method in @sec-verify (.txt file).
+
+## BibTeX 
+
+We encourage you to use BibTeX.
+If you have, please feel free to use the package natbib with any bibliography style you're comfortable with. The .bst file agsm has been included here for your convenience. 
