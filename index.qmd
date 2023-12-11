@@ -40,18 +40,21 @@ Why? Motivational example: Classic bootstrap example, and show what happens with
 
 Structure of this paper?
 
-## Bootstrap and Resampling Approaches
+## Bootstrap effect on plots
 
-Outline of commonly used bootstrap/resampling approaches and evaluation of graphical challenges
+Outline of commonly used bootstrap/resampling approaches and evaluation of graphical challenges. Need to show this with lineups.
 
-- bootstrap problem
+- bootstrap problem:
+    - scatterplot
+    - histogram should be ok, but could have unusually high bars
+    - density plots also should be ok, but might have bibbles og high-density
 - parametric bootstrap
 - permutation
 - high-dimensions?
 
 Solutions
 
-- jitter
+- jitter - persistent
 
 ## Disclosure statement
 
