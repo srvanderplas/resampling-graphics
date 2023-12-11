@@ -80,3 +80,8 @@ HIV data set:
 
 We encourage you to use BibTeX.
 If you have, please feel free to use the package natbib with any bibliography style you're comfortable with. The .bst file agsm has been included here for your convenience. 
+
+https://doi.org/10.1214%2Faos%2F1176344552
+
+https://doi.org/10.2307%2F2289144
+
