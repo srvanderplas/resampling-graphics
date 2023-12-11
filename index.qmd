@@ -8,16 +8,16 @@ format:
   jasa-html: default
 date: last-modified
 author:
-  - name: Di Cook
-    acknowledgements: | 
-      The authors gratefully acknowledge _please remember to list all relevant funding sources in the non-anonymized (unblinded) version_.
-    affiliations:
-      - name: Monash University
-        department: Department of Econometrics and Business Statistics
   - name: Susan Vanderplas
     affiliations:
       - name: University of Nebraska Lincoln
         department: Statistics Department
+  - name: Dianne Cook
+    affiliations:
+      - name: Monash University
+        department: Department of Econometrics and Business Statistics
+    acknowledgements: | 
+      The authors gratefully acknowledge _please remember to list all relevant funding sources in the non-anonymized (unblinded) version_.
 abstract: |
   The text of your abstract. 200 or fewer words.
 keywords:
@@ -28,19 +28,30 @@ bibliography: bibliography.bib
 
 ## Introduction {#sec-intro}
 
-Lay out the situations where resampling/bootstrap are useful 
+Define bootstrap, and varieties, and examples of use, with tables of numbers. 
+- Lay out the situations where resampling/bootstrap are useful.
+- Primarily, used to get a sense of the behavior/distribution of a statistic
 
-Primarily, used to get a sense of the behavior/distribution of a statistic
+Introduce lineup/Rorschach protocols. Graphics are statistics, but ultimately, resampling/bootstrap methods are of limited use in graphics because of two primary issues: 
+- overplotting, which limits the utility of resampling because of lack of visual novelty, and 
+- limited ability to evaluate the test statistics - we can computationally evaluate thousands of samples in fractions of a second, but viewing thousands of plots is much more time consuming.
 
-Graphics are statistics, but ultimately, resampling/bootstrap methods are of limited use in graphics because of two primary issues: overplotting, which limits the utility of resampling because of lack of visual novelty, and limited ability to evaluate the test statistics - we can computationally evaluate thousands of samples in fractions of a second, but viewing thousands of plots is much more time consuming.
+Why? Motivational example: Classic bootstrap example, and show what happens with plots - points disappear.
+
+Structure of this paper?
 
 ## Bootstrap and Resampling Approaches
 
 Outline of commonly used bootstrap/resampling approaches and evaluation of graphical challenges
 
+- bootstrap problem
+- parametric bootstrap
+- permutation
+- high-dimensions?
 
+Solutions
 
-
+- jitter
 
 ## Disclosure statement
 
