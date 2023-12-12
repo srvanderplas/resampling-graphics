@@ -28,9 +28,18 @@ bibliography: bibliography.bib
 
 ## Introduction {#sec-intro}
 
-Define bootstrap, and varieties, and examples of use, with tables of numbers. 
-- Lay out the situations where resampling/bootstrap are useful.
-- Primarily, used to get a sense of the behavior/distribution of a statistic
+<!-- What about https://bookdown.org/jgscott/DSGI/the-bootstrap.html#bootstrapping-summaries as an example dataset? Sleep data from NHANES 2011-12.  -->
+
+<!-- Define bootstrap, and varieties, and examples of use, with tables of numbers.  -->
+<!-- - Lay out the situations where resampling/bootstrap are useful. -->
+<!-- - Primarily, used to get a sense of the behavior/distribution of a statistic -->
+
+We frequently come across data which does not come with an attached standard distribution (or any theoretical reasons we might assume such a distribution).
+In these cases, we still may want to understand the uncertainty in our estimates, but we do not have distributional theory to rely on; instead, we may use resampling to assess the variability of estimates via the **bootstrap**. 
+The bootstrap works via the assumption that the main source of variability in the estimate is the sampling process; by resampling the data, we can mimic the variability of the process and better understand the variability of the quantities we have estimated.
+
+
+
 
 Introduce lineup/Rorschach protocols. Graphics are statistics, but ultimately, resampling/bootstrap methods are of limited use in graphics because of two primary issues: 
 - overplotting, which limits the utility of resampling because of lack of visual novelty, and 
@@ -49,12 +58,25 @@ Outline of commonly used bootstrap/resampling approaches and evaluation of graph
     - histogram should be ok, but could have unusually high bars
     - density plots also should be ok, but might have bibbles og high-density
 - parametric bootstrap
+- residual resampling (https://bookdown.org/jgscott/DSGI/the-bootstrap.html#bootstrapping-summaries footnote)
 - permutation
 - high-dimensions?
 
 Solutions
 
 - jitter - persistent
+
+
+
+
+```{r}
+if (!"nhanesA" %in% installed.packages()) devtools::install_github("cjendres1/nhanes")
+library(nhanesA)
+nhanesSearchVarName("SleepHrsNight")
+```
+
+
+---
 
 ## Disclosure statement
 
