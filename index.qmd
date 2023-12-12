@@ -26,6 +26,39 @@ keywords:
 bibliography: bibliography.bib  
 ---
 
+
+```{r get-nhanes-data, include = F}
+if (!file.exists("data/NHANES_sleep_raw.csv")) {
+  if (!"nhanesA" %in% installed.packages()) devtools::install_github("cjendres1/nhanes")
+  library(nhanesA)
+  library(tidyverse)
+  demo_table <- nhanesTables(data_group='DEMO', year=2011) %>%
+    `[[`('Data.File.Name') %>%
+    nhanes()
+  
+  sleep_table <- nhanesTables(data_group="Q",  year = 2011) %>%
+    filter(str_detect(Data.File.Name, "SLQ")) %>%
+    `[[`('Data.File.Name') %>%
+    nhanes()
+  
+  depression_table <- nhanes("DPQ_G") 
+  
+  homeowner_table <- nhanes("HOQ_G")
+  
+  # Still can't figure out what the smoke100 column is in the data in the book, but not sure it matters.
+  
+  nhanes_sleep <- full_join(demo_table, sleep_table, by = "SEQN") %>%
+    full_join(depression_table, by = "SEQN") %>%
+    full_join(homeowner_table, by = "SEQN") %>%
+    select(SEQN, Gender = RIAGENDR, Age = RIDAGEYR, HomeOwn = HOQ065, SleepHoursNight = SLD010H)
+  
+  write_csv(nhanes_sleep, "data/NHANES_sleep_raw.csv")
+} else {
+  nhanes_sleep <- read_csv("data/NHANES_sleep_raw.csv")
+}
+```
+
+
 ## Introduction {#sec-intro}
 
 <!-- What about https://bookdown.org/jgscott/DSGI/the-bootstrap.html#bootstrapping-summaries as an example dataset? Sleep data from NHANES 2011-12.  -->
@@ -36,7 +69,10 @@ bibliography: bibliography.bib
 
 We frequently come across data which does not come with an attached standard distribution (or any theoretical reasons we might assume such a distribution).
 In these cases, we still may want to understand the uncertainty in our estimates, but we do not have distributional theory to rely on; instead, we may use resampling to assess the variability of estimates via the **bootstrap**. 
-The bootstrap works via the assumption that the main source of variability in the estimate is the sampling process; by resampling the data, we can mimic the variability of the process and better understand the variability of the quantities we have estimated.
+The bootstrap works via the assumption that the main source of variability in the estimate is the sampling process; by resampling the data, we can mimic the variability of the process in order to understand the resulting variability of the estimates.
+
+Bootstrap estimates work fantastically well when used to estimate quantities which depend on the "body" of the data (the middle portion, excluding the tails), but tend to fail when quantities are dependent on the tails, because these are relatively low probability observations. 
+
 
 
 
@@ -66,40 +102,6 @@ Solutions
 
 - jitter - persistent
 
-
-
-
-```{r get-nhanes-data}
-if (!file.exists("data/NHANES_sleep_raw.csv")) {
-  if (!"nhanesA" %in% installed.packages()) devtools::install_github("cjendres1/nhanes")
-  library(nhanesA)
-  library(tidyverse)
-  demo_table <- nhanesTables(data_group='DEMO', year=2011) %>%
-    `[[`('Data.File.Name') %>%
-    nhanes()
-  
-  sleep_table <- nhanesTables(data_group="Q",  year = 2011) %>%
-    filter(str_detect(Data.File.Name, "SLQ")) %>%
-    `[[`('Data.File.Name') %>%
-    nhanes()
-  
-  depression_table <- nhanes("DPQ_G") 
-  
-  homeowner_table <- nhanes("HOQ_G")
-  
-  # Still can't figure out what the smoke100 column is in the data in the book, but not sure it matters.
-  
-  nhanes_sleep <- full_join(demo_table, sleep_table, by = "SEQN") %>%
-    full_join(depression_table, by = "SEQN") %>%
-    full_join(homeowner_table, by = "SEQN") %>%
-    select(SEQN, Gender = RIAGENDR, Age = RIDAGEYR, HomeOwn = HOQ065, SleepHoursNight = SLD010H)
-  
-  write_csv(nhanes_sleep, "data/NHANES_sleep_raw.csv")
-} else {
-  nhanes_sleep <- read_csv("data/NHANES_sleep_raw.csv")
-}
-
-```
 
 
 ---
