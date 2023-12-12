@@ -69,10 +69,36 @@ Solutions
 
 
 
-```{r}
-if (!"nhanesA" %in% installed.packages()) devtools::install_github("cjendres1/nhanes")
-library(nhanesA)
-nhanesSearchVarName("SleepHrsNight")
+```{r get-nhanes-data}
+if (!file.exists("data/NHANES_sleep_raw.csv")) {
+  if (!"nhanesA" %in% installed.packages()) devtools::install_github("cjendres1/nhanes")
+  library(nhanesA)
+  library(tidyverse)
+  demo_table <- nhanesTables(data_group='DEMO', year=2011) %>%
+    `[[`('Data.File.Name') %>%
+    nhanes()
+  
+  sleep_table <- nhanesTables(data_group="Q",  year = 2011) %>%
+    filter(str_detect(Data.File.Name, "SLQ")) %>%
+    `[[`('Data.File.Name') %>%
+    nhanes()
+  
+  depression_table <- nhanes("DPQ_G") 
+  
+  homeowner_table <- nhanes("HOQ_G")
+  
+  # Still can't figure out what the smoke100 column is in the data in the book, but not sure it matters.
+  
+  nhanes_sleep <- full_join(demo_table, sleep_table, by = "SEQN") %>%
+    full_join(depression_table, by = "SEQN") %>%
+    full_join(homeowner_table, by = "SEQN") %>%
+    select(SEQN, Gender = RIAGENDR, Age = RIDAGEYR, HomeOwn = HOQ065, SleepHoursNight = SLD010H)
+  
+  write_csv(nhanes_sleep, "data/NHANES_sleep_raw.csv")
+} else {
+  nhanes_sleep <- read_csv("data/NHANES_sleep_raw.csv")
+}
+
 ```
 
 ```{r}
@@ -112,7 +138,7 @@ There is a sample size effect: large samples probably not many issues. Smaller s
 ---
 
 ## Disclosure statement
-
+, 
 The authors have the following conflicts of interest to declare (or replace with a statement that no conflicts of interest exist).
 
 ## Data Availability Statement
