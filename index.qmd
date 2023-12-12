@@ -75,6 +75,39 @@ library(nhanesA)
 nhanesSearchVarName("SleepHrsNight")
 ```
 
+```{r}
+#| eval: false
+library(tidyverse)
+library(patchwork)
+library(ggbeeswarm)
+set.seed(1152)
+NHANES_sleep <- read_csv("data/NHANES_sleep.csv")
+n <- nrow(NHANES_sleep)
+bin <- 1
+nh_sample <- sample_frac(NHANES_sleep, 0.1)
+d <- nh_sample %>% 
+  select(SleepHrsNight) %>%
+  rename(b0 = SleepHrsNight) %>%
+  mutate(b1 = sample(b0, replace=TRUE),
+         b2 = sample(b0, replace=TRUE),
+         b3 = sample(b0, replace=TRUE)) %>%
+  pivot_longer(cols=everything(), names_to="sample", values_to="b")
+ggplot(d) + 
+  geom_histogram(aes(x = b), binwidth=bin) +
+  facet_wrap(~sample, ncol=2)
+ggplot(d) + 
+  geom_quasirandom(aes(x = sample, y=b), alpha=0.1) 
+ggplot(d) + 
+  geom_violin(aes(x = sample, y=b)) 
+ggplot(d) + 
+  geom_boxplot(aes(x = sample, y=b)) 
+```
+
+There is a sample size effect: large samples probably not many issues. Smaller samples, eg 10% of the NHANES (~800 observations) there is 
+- piling in the histogram
+- pitted patterns in jittered dotplot
+- extremes missing in violin plots and boxplots
+
 
 ---
 
@@ -109,4 +142,7 @@ If you have, please feel free to use the package natbib with any bibliography st
 https://doi.org/10.1214%2Faos%2F1176344552
 
 https://doi.org/10.2307%2F2289144
+
+https://bookdown.org/jgscott/DSGI/the-bootstrap.html#bootstrapping-summaries
+
 
