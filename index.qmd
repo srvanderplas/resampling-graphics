@@ -103,10 +103,6 @@ Solutions
 - jitter - persistent
 
 
-
-<<<<<<< HEAD
-=======
-
 ```{r get-nhanes-data}
 if (!file.exists("data/NHANES_sleep_raw.csv")) {
   if (!"nhanesA" %in% installed.packages()) devtools::install_github("cjendres1/nhanes")
@@ -173,7 +169,6 @@ There is a sample size effect: large samples probably not many issues. Smaller s
 - extremes missing in violin plots and boxplots
 
 
->>>>>>> f8f9db361b4d3a9b0598d7cb1a9467c4b597b162
 ---
 
 ## Disclosure statement
