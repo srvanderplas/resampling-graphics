@@ -34,6 +34,7 @@ library(dplyr)
 library(purrr)
 library(patchwork)
 library(ggbeeswarm)
+library(palmerpenguins)
 ```
 
 ```{r get-nhanes-data, include = F}
@@ -78,7 +79,12 @@ The data mentioned in @hesterbergBootstrap2011 doesn't seem to exist online from
 ```
 
 ```{r}
-
+p_nona <- penguins %>%
+  na.omit() %>%
+  rename(bl = bill_length_mm,
+         bd = bill_depth_mm,
+         fl = flipper_length_mm,
+         bm = body_mass_g)
 ```
 
 
@@ -205,6 +211,41 @@ p7 <- ggplot(d2, aes(x=Age, y=SleepHrsNight)) +
   theme(aspect.ratio=1)
 p5 + p6 + p7 + plot_layout(ncol=1)
 ```
+
+```{r}
+#| echo: false
+#| fig-cap: "Potential bivariate effects: see less points, or if use transparency some dark points"
+#| fig-height: 10
+#| fig-width: 10
+#| out-width: 100%
+d2 <- nh_sample %>% 
+  select(SleepHrsNight, Age) %>%
+  mutate(sample = 1)
+d3 <- mosaic::resample(d2) %>%
+  select(-orig.id) %>%
+  mutate(sample = 2)
+d4 <- mosaic::resample(d2) %>%
+  select(-orig.id) %>%
+  mutate(sample = 3)
+d5 <- mosaic::resample(d2) %>%
+  select(-orig.id) %>%
+  mutate(sample = 4)
+d2 <- d2 %>% bind_rows(d3, d4, d5)
+p5 <- ggplot(d2, aes(x=Age, y=SleepHrsNight)) +
+  geom_point() +
+  facet_wrap(~sample, ncol=4) +
+  theme(aspect.ratio=1)
+p6 <- ggplot(d2, aes(x=Age, y=SleepHrsNight)) +
+  geom_point(alpha=0.5) +
+  facet_wrap(~sample, ncol=4) +
+  theme(aspect.ratio=1)
+p7 <- ggplot(d2, aes(x=Age, y=SleepHrsNight)) +
+  geom_density_2d() +
+  facet_wrap(~sample, ncol=4) +
+  theme(aspect.ratio=1)
+p5 + p6 + p7 + plot_layout(ncol=1)
+```
+
 
 ---
 
