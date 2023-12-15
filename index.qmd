@@ -26,11 +26,18 @@ keywords:
 bibliography: bibliography.bib  
 ---
 
-```{r}
-library(tidyverse)
+```{r setup}
+#| include: false
+library(readr)
+library(tidyr)
+library(dplyr)
+library(purrr)
+library(patchwork)
+library(ggbeeswarm)
 ```
 
 ```{r get-nhanes-data, include = F}
+
 if (!file.exists("data/NHANES_sleep_raw.csv")) {
   if (!"nhanesA" %in% installed.packages()) devtools::install_github("cjendres1/nhanes")
   library(nhanesA)
@@ -61,6 +68,20 @@ if (!file.exists("data/NHANES_sleep_raw.csv")) {
 }
 ```
 
+The data mentioned in @hesterbergBootstrap2011 doesn't seem to exist online from the original source. I'm sure it's probably on Kaggle, but I have some ... qualms about getting it from there. Ideas? There's a US dataset available here: https://www.sciencebase.gov/catalog/item/5eac387682cefae35a225a91
+
+```{r get-arsenic-data, include = F}
+# if (!file.exists("data/arsenic.csv")) {
+#   download.file("https://www2.bgs.ac.uk/downloads/start.cfm?id=2217", destfile = "data/arsenic.csv", mode = "wb")
+# }
+
+```
+
+```{r}
+
+```
+
+
 
 ## Introduction {#sec-intro}
 
@@ -74,8 +95,16 @@ We frequently come across data which does not come with an attached standard dis
 In these cases, we still may want to understand the uncertainty in our estimates, but we do not have distributional theory to rely on; instead, we may use resampling to assess the variability of estimates via the **bootstrap**. 
 The bootstrap works via the assumption that the main source of variability in the estimate is the sampling process; by resampling the data, we can mimic the variability of the process in order to understand the resulting variability of the estimates.
 
-Bootstrap estimates work fantastically well when used to estimate quantities which depend on the "body" of the data (the middle portion, excluding the tails), but tend to fail when quantities are dependent on the tails, because these are relatively low probability observations. 
+Bootstrap estimates work fantastically well when used to estimate the variability of quantities which depend on the "body" of the data (the middle portion, excluding the tails), but tend to fail when they are dependent on the tails of a distribution, because these are relatively low probability observations. 
+Most importantly, the bootstrap can be extremely useful to understand the distribution of statistics which have no easily calculated formulaic representation, including robust alternatives to traditional statistical procedures.
+Graphs have been considered visual statistics [@vanderplasTestingStatisticalCharts2020;@vanderplasStatisticalSignificanceCalculations2021;@majumderValidationVisualStatistical2013;@bujaStatisticalInferenceExploratory2009], but in many cases, the benefits of the bootstrap do not translate effectively to these visual statistics (which is not to say that graphics cannot be used to show the results of bootstrap procedures). 
 
+That bootstraps are not always useful in statistical graphics seems at odds with the use of visual inference; indeed, resampling  and permutation procedures are often used to create the null plots which are a critical component of visual inference. 
+However, resampling in these contexts usually destroys existing bivariate or multivariate relationships between variables in the data, which is very different from the goal of bootstrap techniques that use resampling, but are focused on understanding the existing relationships between variables.
+
+
+In this paper, we examine the use of the bootstrap through a visual lens, considering the different types of bootstraps as well as different visual summaries of data. 
+We establish effective use cases for bootstrapping in graphics and also highlight alternatives when the bootstrap does not produce useful results. 
 
 
 
@@ -108,31 +137,33 @@ Solutions
 
 
 ```{r}
-#| eval: false
-library(tidyverse)
-library(patchwork)
-library(ggbeeswarm)
+#| echo: false
+#| fig-cap: "Potential effects: piling in histograms, overplotting/piling in jittered dotplots, lack of extremes in boxplots/violin plots. Disappear(?) with larger sample size."
+#| fig-height: 10
+#| fig-width: 10
+#| out-width: 100%
 set.seed(1152)
 NHANES_sleep <- read_csv("data/NHANES_sleep.csv")
 n <- nrow(NHANES_sleep)
 bin <- 1
 nh_sample <- sample_frac(NHANES_sleep, 0.1)
-d <- nh_sample %>% 
+d1 <- nh_sample %>% 
   select(SleepHrsNight) %>%
   rename(b0 = SleepHrsNight) %>%
   mutate(b1 = sample(b0, replace=TRUE),
          b2 = sample(b0, replace=TRUE),
          b3 = sample(b0, replace=TRUE)) %>%
   pivot_longer(cols=everything(), names_to="sample", values_to="b")
-ggplot(d) + 
+p1 <- ggplot(d1) + 
   geom_histogram(aes(x = b), binwidth=bin) +
   facet_wrap(~sample, ncol=2)
-ggplot(d) + 
+p2 <- ggplot(d1) + 
   geom_quasirandom(aes(x = sample, y=b), alpha=0.1) 
-ggplot(d) + 
+p3 <- ggplot(d1) + 
   geom_violin(aes(x = sample, y=b)) 
-ggplot(d) + 
+p4 <- ggplot(d1) + 
   geom_boxplot(aes(x = sample, y=b)) 
+p1 + p2 + p3 + p4 + plot_layout(ncol=2)
 ```
 
 There is a sample size effect: large samples probably not many issues. Smaller samples, eg 10% of the NHANES (~800 observations) there is 
@@ -140,6 +171,40 @@ There is a sample size effect: large samples probably not many issues. Smaller s
 - pitted patterns in jittered dotplot
 - extremes missing in violin plots and boxplots
 
+
+```{r}
+#| echo: false
+#| fig-cap: "Potential bivariate effects: see less points, or if use transparency some dark points"
+#| fig-height: 10
+#| fig-width: 10
+#| out-width: 100%
+d2 <- nh_sample %>% 
+  select(SleepHrsNight, Age) %>%
+  mutate(sample = 1)
+d3 <- mosaic::resample(d2) %>%
+  select(-orig.id) %>%
+  mutate(sample = 2)
+d4 <- mosaic::resample(d2) %>%
+  select(-orig.id) %>%
+  mutate(sample = 3)
+d5 <- mosaic::resample(d2) %>%
+  select(-orig.id) %>%
+  mutate(sample = 4)
+d2 <- d2 %>% bind_rows(d3, d4, d5)
+p5 <- ggplot(d2, aes(x=Age, y=SleepHrsNight)) +
+  geom_point() +
+  facet_wrap(~sample, ncol=4) +
+  theme(aspect.ratio=1)
+p6 <- ggplot(d2, aes(x=Age, y=SleepHrsNight)) +
+  geom_point(alpha=0.5) +
+  facet_wrap(~sample, ncol=4) +
+  theme(aspect.ratio=1)
+p7 <- ggplot(d2, aes(x=Age, y=SleepHrsNight)) +
+  geom_density_2d() +
+  facet_wrap(~sample, ncol=4) +
+  theme(aspect.ratio=1)
+p5 + p6 + p7 + plot_layout(ncol=1)
+```
 
 ---
 
